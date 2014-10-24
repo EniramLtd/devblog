@@ -1,0 +1,458 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Reactive programming with Python – Part 1 &mdash; Lusmu blog post drafts 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/cloud.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/lusmu.css" type="text/css" />
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Noticia+Text|Open+Sans|Droid+Sans+Mono" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/jquery.cookie.js"></script>
+    <script type="text/javascript" src="_static/cloud.js"></script>
+    <link rel="top" title="Lusmu blog post drafts 0.1 documentation" href="index.html" />
+    <link rel="prev" title="Lusmu – a reactive programming library for Python" href="index.html" /> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <div class="relbar-top">
+        
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="index.html" title="Lusmu – a reactive programming library for Python"
+             accesskey="P">previous</a> &nbsp; &nbsp;</li>
+    <li><a href="index.html">Lusmu blog post drafts 0.1 documentation</a> &raquo;</li>
+ 
+      </ul>
+    </div>
+    </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="reactive-programming-with-python-part-1">
+<h1>Reactive programming with Python – Part 1<a class="headerlink" href="#reactive-programming-with-python-part-1" title="Permalink to this headline">¶</a></h1>
+<p>At <a class="reference external" href="http://www.eniram.fi/">Eniram</a>,
+we help shipping companies reduce fuel consumption
+using a data-driven approach.
+Our servers crunch measurement data
+for hundreds of variables
+from hundreds of ships
+sailing around the world.</p>
+<p>We validate incoming data,
+and perform analysis and statistical modeling based on the data.
+In some cases, processing takes place on board ships without connectivity
+or on workstations of data analysts.</p>
+<p>It&#8217;s desirable to have one unified toolchain
+for data processing.
+The tools should enable non-programmers to specify rules
+for data validation and analysis.</p>
+<p>We&#8217;ve long relied on Python and a number of its <a class="reference external" href="https://wiki.python.org/moin/NumericAndScientific">scientific libraries</a>
+in our data processing stack,
+and we wanted to extend the stack
+by introducing a framework for organizing data flow and processing data.
+Dataflow oriented tools are a natural fit
+for a data-centered business,
+but none of the existing packages <a class="footnote-reference" href="#existing-tools" id="id1">[1]</a> for Python
+were a perfect fit for our growing needs.
+Thus, we decided to build an in-house solution.</p>
+<p>Our core library <a class="reference external" href="https://github.com/akaihola/lusmu">Lusmu</a>
+is a minimal reactive programming framework –
+we&#8217;ve tried to avoid feature creep
+and leave out anything we don&#8217;t need.
+In particular, we strived for simplicity and performance
+and left out things like
+type checking,
+unit handling,
+data buffering
+and parallel execution support.
+Some of these advanced features are or will be implemented
+in higher layers of our stack
+or as optional features of Lusmu
+which can be turned on when needed.</p>
+<p>This blog post series
+will start with a brief introduction to dataflow and reactive programming
+with examples written using Lusmu.
+In subsequent parts we will introduce</p>
+<ul class="simple">
+<li>source code for a simplified version of Lusmu
+to help understand what goes on under the hood</li>
+<li>additional features for scientific data processing</li>
+<li>a declarative graph DSL for non-programmers</li>
+<li>templates and loops for making complex graphs</li>
+<li>other parts of the Eniram stack around Lusmu.</li>
+</ul>
+<div class="section" id="confusion-dataflow-or-reactive-programming">
+<h2>Confusion: &#8220;Dataflow&#8221; or &#8220;reactive&#8221; programming?<a class="headerlink" href="#confusion-dataflow-or-reactive-programming" title="Permalink to this headline">¶</a></h2>
+<p>The terminology used in this field of programming
+is quite vague and inconsistent.
+For the purpose of this blog post series,
+we&#8217;re anchoring ourselves in conventions defined by Matt Carkci
+in his recent book &#8220;<a class="reference external" href="http://dataflowbook.com/">Dataflow and Reactive Programming Systems</a>&#8221;
+(Lean Publishing 2014).
+As a matter of fact,
+we went through the trouble
+of renaming many of the classes and attributes in Lusmu
+to match terminology used by Carkci.
+The result of this renaming lives
+in the <a class="reference external" href="https://github.com/akaihola/lusmu/tree/fix-terminology">fix-terminology branch</a> on GitHub.</p>
+<p>However, the definitions of Reactive programming quoted by Carkci
+don&#8217;t match what Lusmu is and does,
+while those in the Wikipedia article for Reactive programming
+most certainly do.</p>
+<p>Carkci suggests to use Dataflow and Reactive
+synonymously in casual use,
+so for now we&#8217;ll just claim that
+Lusmu indeed is a Reactive programming library.</p>
+</div>
+<div class="section" id="operations-input-ports-and-output-ports">
+<h2>Operations, input ports and output ports<a class="headerlink" href="#operations-input-ports-and-output-ports" title="Permalink to this headline">¶</a></h2>
+<p>In dataflow programming, the basic data processing unit is an <em>operation</em>.</p>
+<p>In Lusmu we define operations as Python callables –
+either simple functions
+or classes which define the <tt class="docutils literal"><span class="pre">__call__</span></tt> magic method.
+The callables take arbitrary Python data types as inputs
+and can output any Python types as well:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">difference</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="sd">&quot;&quot;&quot;Calculate the difference between numbers using a simple function&quot;&quot;&quot;</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">b</span> <span class="o">-</span> <span class="n">a</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">IsInRange</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="sd">&quot;&quot;&quot;Check that number is in range using a callable object&quot;&quot;&quot;</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="sd">&quot;&quot;&quot;Save the low and high limits&quot;&quot;&quot;</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">low</span> <span class="o">=</span> <span class="n">low</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">high</span> <span class="o">=</span> <span class="n">high</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="sd">&quot;&quot;&quot;Perform the actual check against saved limits&quot;&quot;&quot;</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">low</span> <span class="o">&lt;=</span> <span class="n">data</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">data</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">high</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Here, the use of the <tt class="docutils literal"><span class="pre">&amp;</span></tt> operator instead of <tt class="docutils literal"><span class="pre">and</span></tt>
+looks admittedly unpythonic, but it&#8217;s there for a good reason:
+this way the comparison works both for scalars
+and for NumPy arrays.</p>
+</div>
+<p>To visualize operations,
+we use rectangles with <em>input ports</em> on the left
+and the <em>output port</em> on the right:</p>
+<p class="graphviz">
+<img src="_images/graphviz-447999ccab5b3008bc5dd4076262047ef26fcbad.png" alt="digraph {
+    rankdir = LR;
+
+    node [shape=none, label=&quot;&quot;, width=.8];
+    i1, i2, m, o;
+
+    node [shape=record, fontname=&quot;Helvetica-Bold&quot;];
+    IsInRange [label=&quot;{&lt;i&gt;|IsInRange\n(low, high)|&lt;o&gt;}&quot;];
+    difference [label=&quot;{{&lt;a&gt;|&lt;b&gt;}|difference|&lt;o&gt;}&quot;];
+
+    i1 -&gt; difference:a;
+    i2 -&gt; difference:b;
+    difference:o -&gt; m;
+    m -&gt; IsInRange:i;
+    IsInRange:o -&gt; o;
+}" />
+</p>
+</div>
+<div class="section" id="source-nodes-and-operation-nodes">
+<h2>Source nodes and operation nodes<a class="headerlink" href="#source-nodes-and-operation-nodes" title="Permalink to this headline">¶</a></h2>
+<p>In dataflow programming,
+the program is built as a <em>directed graph</em> built out of <em>nodes</em>.
+Nodes are connected to each other with <em>arcs</em>
+which use the output and input ports as endpoints.</p>
+<p>Data is fed into the system using <em>source nodes</em>.
+In Lusmu, source nodes are defined using the <tt class="docutils literal"><span class="pre">SrcNode</span></tt> class.
+Every Lusmu node needs to hold a string identifier as its name,
+and that&#8217;s all we need at this point:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">lusmu.core</span> <span class="kn">import</span> <span class="n">SrcNode</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">speed_over_ground</span> <span class="o">=</span> <span class="n">SrcNode</span><span class="p">(</span><span class="s">&#39;speed_over_ground&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">speed_through_water</span> <span class="o">=</span> <span class="n">SrcNode</span><span class="p">(</span><span class="s">&#39;speed_through_water&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Data processing happens in <em>operation nodes</em>.
+Each operation node uses one of the operation functions
+to perform some transformation on input data.</p>
+<p>In Lusmu, the <tt class="docutils literal"><span class="pre">OpNode</span></tt> class is used to define operation nodes:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">lusmu.core</span> <span class="kn">import</span> <span class="n">OpNode</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">current</span> <span class="o">=</span> <span class="n">OpNode</span><span class="p">(</span><span class="s">&#39;current&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                 <span class="n">op</span><span class="o">=</span><span class="n">difference</span><span class="p">,</span>
+<span class="gp">... </span>                 <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">speed_over_ground</span><span class="p">,</span> <span class="n">speed_through_water</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ok_current</span> <span class="o">=</span> <span class="n">OpNode</span><span class="p">(</span><span class="s">&#39;ok_current&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                    <span class="n">op</span><span class="o">=</span><span class="n">IsInRange</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+<span class="gp">... </span>                    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">current</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Notice how the set of inputs of a node
+always corresponds to the signature of the operation:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">def</span> <span class="pre">difference(a,</span> <span class="pre">b)</span></tt> – <tt class="docutils literal"><span class="pre">[speed_over_ground,</span> <span class="pre">speed_through_water]</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">def</span> <span class="pre">__call__(self,</span> <span class="pre">data)</span></tt> – <tt class="docutils literal"><span class="pre">[current]</span></tt></li>
+</ul>
+<p>A complete visualization of the graph we just defined
+with two source nodes,
+two operation nodes
+and four arcs connecting the nodes together:</p>
+<p class="graphviz">
+<img src="_images/graphviz-c7cfac353ca7dee569e04d6483eaf1e7260ce084.png" alt="digraph {
+    rankdir = LR;
+    graph [style=rounded; fontname=&quot;Helvetica-Bold&quot;];
+    subgraph cluster_sog {
+        label=&quot;speed_over_ground&quot;;
+        speed_over_ground [shape=rect, label=&quot;output port&quot;]; }
+    subgraph cluster_stw {
+        label=&quot;speed_through_water&quot;;
+        speed_through_water [shape=rect, label=&quot;output port&quot;]; }
+    subgraph cluster_difference {
+        label=&quot;current&quot;;
+        difference [shape=record; label=&quot;{{&lt;a&gt;|&lt;b&gt;}|difference|&lt;o&gt;}&quot;; fontname=&quot;Helvetica-Bold&quot;];
+        node [shape=rect]; edge [label=&quot;&quot;];
+        difference_i1 [label=&quot;input\nport 1&quot;];
+        difference_i2 [label=&quot;input\nport 2&quot;];
+        difference_o [label=&quot;output\nport&quot;];
+        difference_i1 -&gt; difference:a;
+        difference_i2 -&gt; difference:b;
+        difference:o -&gt; difference_o; }
+    subgraph cluster_IsInRange {
+        label=&quot;ok_current&quot;;
+        IsInRange [shape=record; label=&quot;{&lt;i&gt;|IsInRange\n(-2, 2)|&lt;o&gt;}&quot;; fontname=&quot;Helvetica-Bold&quot;];
+        node [shape=rect]; edge [label=&quot;&quot;];
+        IsInRange_i [label=&quot;input\nport&quot;];
+        IsInRange_o [label=&quot;output\nport&quot;];
+        IsInRange_i -&gt; IsInRange:i;
+        IsInRange:o -&gt; IsInRange_o; }
+    node [label=&quot;&quot;, shape=none; width=0]; edge [label=&quot;arc&quot;];
+    speed_over_ground -&gt; difference_i1;
+    speed_through_water -&gt; difference_i2;
+    difference_o -&gt; IsInRange_i;
+    IsInRange_o -&gt; a4;
+}" />
+</p>
+</div>
+<div class="section" id="scalar-example">
+<h2>Scalar example<a class="headerlink" href="#scalar-example" title="Permalink to this headline">¶</a></h2>
+<p>Let&#8217;s drive the graph first using simple scalar values:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">speed_over_ground</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="mf">22.0</span><span class="p">)</span>
+<span class="go">set()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">speed_through_water</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="mf">23.5</span><span class="p">)</span>
+<span class="go">set()</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The return value (here an empty set)
+is used by eager evaluation (Push Data) support.
+This example uses lazy evaluation (Pull Data),
+and the return value has no use.
+Keep tuned for upcoming parts of this blog series
+for more information.</p>
+</div>
+<p>Due to lazy evaluation,
+the <tt class="docutils literal"><span class="pre">current</span></tt> and <tt class="docutils literal"><span class="pre">ok_current</span></tt> nodes haven&#8217;t been fired yet.
+We need to read the results of the calculation first:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ok_current</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>This <em>fires</em> the <tt class="docutils literal"><span class="pre">ok_current</span></tt> node. Firing a node:</p>
+<ul class="simple">
+<li>visits each node connected to an input port of the node</li>
+<li>if an input node has no data, fires the input node</li>
+<li>gets data from each input node</li>
+<li>calls the operation function with the input data</li>
+<li>saves the data in the node</li>
+</ul>
+<p>So what <tt class="docutils literal"><span class="pre">get_data()</span></tt> does recursively in this case is:</p>
+<ul class="simple">
+<li>fire <tt class="docutils literal"><span class="pre">ok_current</span></tt></li>
+<li>check <tt class="docutils literal"><span class="pre">current</span></tt> – no data<ul>
+<li>fire <tt class="docutils literal"><span class="pre">current</span></tt></li>
+<li>check and get data from <tt class="docutils literal"><span class="pre">speed_over_ground</span></tt> and <tt class="docutils literal"><span class="pre">speed_through_water</span></tt></li>
+<li>call <tt class="docutils literal"><span class="pre">difference()</span></tt> with the data</li>
+<li>save and return result from <tt class="docutils literal"><span class="pre">current</span></tt></li>
+</ul>
+</li>
+<li>call <tt class="docutils literal"><span class="pre">IsInRange.__call__()</span></tt> with the result</li>
+<li>save and return result from <tt class="docutils literal"><span class="pre">ok_current</span></tt></li>
+</ul>
+<p>If we at this point retrieve data
+from the intermediate <tt class="docutils literal"><span class="pre">current</span></tt> node,
+no operations are performed
+since all data is already available:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">current</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+<span class="go">1.5</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="vector-example">
+<h2>Vector example<a class="headerlink" href="#vector-example" title="Permalink to this headline">¶</a></h2>
+<p>Since our operations use simple subtraction and comparison operators only,
+it turns out that we create can run this graph unchanged
+using NumPy vector values:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">lusmu.vector</span> <span class="kn">import</span> <span class="n">OpNode</span><span class="p">,</span> <span class="n">SrcNode</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">speed_over_ground</span> <span class="o">=</span> <span class="n">SrcNode</span><span class="p">(</span><span class="s">&#39;speed_over_ground&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">speed_through_water</span> <span class="o">=</span> <span class="n">SrcNode</span><span class="p">(</span><span class="s">&#39;speed_through_water&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">current</span> <span class="o">=</span> <span class="n">OpNode</span><span class="p">(</span><span class="s">&#39;current&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                 <span class="n">op</span><span class="o">=</span><span class="n">difference</span><span class="p">,</span>
+<span class="gp">... </span>                 <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">speed_over_ground</span><span class="p">,</span> <span class="n">speed_through_water</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ok_current</span> <span class="o">=</span> <span class="n">OpNode</span><span class="p">(</span><span class="s">&#39;ok_current&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                    <span class="n">op</span><span class="o">=</span><span class="n">IsInRange</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+<span class="gp">... </span>                    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">current</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">speed_over_ground</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">22.0</span><span class="p">,</span> <span class="mf">21.7</span><span class="p">,</span> <span class="mf">21.9</span><span class="p">]))</span>
+<span class="go">set()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">speed_through_water</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">23.5</span><span class="p">,</span> <span class="mf">23.8</span><span class="p">,</span> <span class="mf">23.3</span><span class="p">]))</span>
+<span class="go">set()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ok_current</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+<span class="go">array([ True, False,  True], dtype=bool)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">current</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+<span class="go">array([ 1.5,  2.1,  1.4])</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<p>Lusmu implements a reactive programming library
+with the following characteristics:</p>
+<ul class="simple">
+<li>data type agnostic</li>
+<li>no type checking</li>
+<li>no unit handling</li>
+<li>Python callables as data operations</li>
+<li>lazy evaluation (Pull Data)</li>
+<li>one or more input ports</li>
+<li>only one output port</li>
+<li>arcs are implicit in nodes</li>
+</ul>
+<p class="rubric">Footnotes</p>
+<table class="docutils footnote" frame="void" id="existing-tools" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td><p class="first">Other dataflow-oriented Python tools:</p>
+<ul class="last simple">
+<li><a class="reference external" href="https://pypi.python.org/pypi/luigi">Luigi</a>: complex pipelines of batch jobs
+(Spotify)</li>
+<li><a class="reference external" href="http://www.trinhhaianh.com/stream.py/">stream.py</a>: lazily-evaluated, parallelizable pipeline
+(Hai-Anh Trinh)</li>
+<li><a class="reference external" href="http://rxpy.codeplex.com/">Rx.py</a>: Reactive Extensions for Python
+(Microsoft Open Technologies, Inc.)</li>
+<li><a class="reference external" href="http://www.kamaelia.org/">Kamaelia</a>: concurrent components that send and receive data
+(BBC Research)</li>
+<li><a class="reference external" href="http://peak.telecommunity.com/DevCenter/Trellis">Trellis</a>: automatic callback management
+(Phillip J. Eby)</li>
+<li><a class="reference external" href="https://pypi.python.org/pypi/traits">Traits</a>: explicitly typed attributes and notifications
+(Enthought, Inc.)</li>
+<li><a class="reference external" href="http://openmdao.org/">OpenMDAO</a>: design analysis and optimization framework
+(NASA Glenn Research Center)</li>
+</ul>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><div class="sphinxlocaltoc">
+    <h3><a href="index.html">Page contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Reactive programming with Python – Part 1</a><ul>
+<li><a class="reference internal" href="#confusion-dataflow-or-reactive-programming">Confusion: &#8220;Dataflow&#8221; or &#8220;reactive&#8221; programming?</a></li>
+<li><a class="reference internal" href="#operations-input-ports-and-output-ports">Operations, input ports and output ports</a></li>
+<li><a class="reference internal" href="#source-nodes-and-operation-nodes">Source nodes and operation nodes</a></li>
+<li><a class="reference internal" href="#scalar-example">Scalar example</a></li>
+<li><a class="reference internal" href="#vector-example">Vector example</a></li>
+<li><a class="reference internal" href="#summary">Summary</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div class="sphinxprev">
+    <h4>Previous page</h4>
+    <p class="topless"><a href="index.html"
+                          title="Previous page">&larr; Lusmu – a reactive programming library for Python</a></p>
+  </div>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/part1.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="relbar-bottom">
+        
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="index.html" title="Lusmu – a reactive programming library for Python"
+             >previous</a> &nbsp; &nbsp;</li>
+    <li><a href="index.html">Lusmu blog post drafts 0.1 documentation</a> &raquo;</li>
+ 
+      </ul>
+    </div>
+    </div>
+
+    <div class="footer">
+        &copy; Copyright 2014, Eniram Ltd.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+    <!-- cloud_sptheme 1.4 -->
+  </body>
+</html>
