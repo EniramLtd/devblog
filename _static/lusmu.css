@@ -3,3 +3,13 @@ div.section > dl {
     border-top: solid 1px #d0d0d0;
     padding-top: 20px;
 }
+
+#disqus_thread {
+    background: #F2F2F2;
+    margin: 0 auto;
+    max-width: 11in;
+    padding: 16px;
+    border-radius: 0.7em;
+    -moz-border-radius: 0.7em;
+    -webkit-border-radius: 0.7em;
+}
