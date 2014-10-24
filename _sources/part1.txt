@@ -371,7 +371,7 @@ with the following characteristics:
 .. _`fix-terminology branch`: https://github.com/akaihola/lusmu/tree/fix-terminology
 
 .. SHIP DATA
-.. http://fms-dev01/hdf5rest/dv4/csv?period=5%20min&id=1091-001&expression=time,latitude,longitude,sog,stw&start=2013-12-28T16:00:00Z&end=2014-01-29T05:00:00Z
+.. http://fms-dev01/hdf5rest/dv4/csv?period=5%20min&id=1091-001&expression=time,latitude,longitude,sog+as+v_g,stw+as+v_w&start=2014-09-03T00:00:00Z&end=2014-10-07T17:00:00Z
 
 .. HISTORY
 .. http://csg.csail.mit.edu/Dataflow/talks/DennisTalk.pdf
