@@ -1,160 +1,133 @@
-
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Lusmu – a reactive programming library for Python &mdash; Lusmu blog post drafts 0.1 documentation</title>
-    
-    <link rel="stylesheet" href="_static/cloud.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/lusmu.css" type="text/css" />
-    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Noticia+Text|Open+Sans|Droid+Sans+Mono" type="text/css" />
-    
-    <script type="text/javascript">
+<!DOCTYPE html><!--[if lt IE 7]>      <html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:og="http://ogp.me/ns#"
+    xmlns:fb="https://www.facebook.com/2008/fbml" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:og="http://ogp.me/ns#"
+    xmlns:fb="https://www.facebook.com/2008/fbml" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:og="http://ogp.me/ns#"
+    xmlns:fb="https://www.facebook.com/2008/fbml" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:og="http://ogp.me/ns#"
+    xmlns:fb="https://www.facebook.com/2008/fbml" class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="description" content="This is the blog space for software developers at Eniram Ltd">
+        <meta name="viewport" content="width=device-width">
+        <title>Home &mdash; Eniram develepers&#39; blog</title>
+            <link rel="stylesheet" href="_static/normalize.css" type="text/css">
+            <link rel="stylesheet" href="_static/sphinx.css" type="text/css">
+            <link rel="stylesheet" href="_static/main.css" type="text/css">
+            <link rel="stylesheet" href="_static/flat.css" type="text/css">
+            <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+            <link rel="stylesheet" href="_static/font-awesome.min.css" type="text/css">
+        <link rel="shortcut icon" href="_static/tinkerer.ico" /><!-- Load modernizr and JQuery -->
+        <script src="_static/vendor/modernizr-2.6.2.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="_static/vendor/jquery-1.8.2.min.js"><\/script>')</script>
+        <script src="_static/plugins.js"></script>
+        <script src="_static/main.js"></script>
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="rss.html" /><script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1',
+        VERSION:     '1.4.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
       };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/jquery.cookie.js"></script>
-    <script type="text/javascript" src="_static/cloud.js"></script>
-    <link rel="top" title="Lusmu blog post drafts 0.1 documentation" href="#" />
-    <link rel="next" title="Reactive programming with Python – Part 1" href="part1.html" /> 
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-  </head>
-  <body>
-    <div class="relbar-top">
-        
-    <div class="related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="part1.html" title="Reactive programming with Python – Part 1"
-             accesskey="N">next</a> &nbsp; &nbsp;</li>
-    <li><a href="#">Lusmu blog post drafts 0.1 documentation</a> &raquo;</li>
- 
-      </ul>
-    </div>
-    </div>
-  
+    </script><script type="text/javascript" src="_static/underscore.js"></script><script type="text/javascript" src="_static/doctools.js"></script><script type="text/javascript" src="_static/disqus.js"></script>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body">
-            
-  <div class="section" id="lusmu-a-reactive-programming-library-for-python">
-<span id="lusmu"></span><h1>Lusmu – a reactive programming library for Python<a class="headerlink" href="#lusmu-a-reactive-programming-library-for-python" title="Permalink to this headline">¶</a></h1>
-<p>Contents:</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="part1.html">Reactive programming with Python – Part 1</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="part1.html#confusion-dataflow-or-reactive-programming">Confusion: &#8220;Dataflow&#8221; or &#8220;reactive&#8221; programming?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="part1.html#operations-input-ports-and-output-ports">Operations, input ports and output ports</a></li>
-<li class="toctree-l2"><a class="reference internal" href="part1.html#source-nodes-and-operation-nodes">Source nodes and operation nodes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="part1.html#scalar-example">Scalar example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="part1.html#vector-example">Vector example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="part1.html#summary">Summary</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
-<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
-<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
-<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
-</ul>
-</div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Scroll to content if on small screen
+            if (screen.width < 480)
+            {
+                $(document).scrollTop(document.getElementsByTagName("article")[0].offsetTop - 44);
+            }
+        });
+    </script></head>
+    <body role="document">
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+        <![endif]-->
 
-
-          </div>
+      <div id="container"><header role="banner">
+            <hgroup>
+              <h1><a href="#">Eniram develepers&#39; blog</a></h1><h2>Scientific tools and tricks in Python</h2></hgroup>
+          </header>
+      <nav role="navigation">
+            <ul><li class="main-nav">
+                  <a href="#">Home</a>
+                </li>
+              </ul>
+          </nav><div class="main-container" role="main"><div class="main wrapper clearfix"><article><div class="timestamp postmeta">
+            <span>October 24, 2014</span>
         </div>
-      </div>
-      <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper"><div class="sphinxlocaltoc">
-    <h3><a href="#">Page contents</a></h3>
-    <ul>
-<li><a class="reference internal" href="#">Lusmu – a reactive programming library for Python</a></li>
-<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
-</ul>
+        <h1><a href="2014/10/24/reactive_dataflow_programming_in_python_part_1.html">Reactive/dataflow programming in Python, part 1</a></h1>
+<p>At <a class="reference external" href="http://www.eniram.fi">Eniram</a>,
+we help shipping companies reduce fuel consumption
+using a data-driven approach.
+Our servers crunch measurement data
+for hundreds of variables
+from hundreds of ships
+sailing around the world.</p>
+<p>We validate incoming data,
+and perform analysis and statistical modeling based on the data.
+In some cases, processing takes place on board ships without connectivity
+or on workstations of data analysts.</p>
+<p>It’s desirable to have one unified toolchain
+for data processing.
+The tools should enable non-programmers to specify rules
+for data validation and analysis.</p>
+<p class="readmorewrapper"><a class="readmore" href="2014/10/24/reactive_dataflow_programming_in_python_part_1.html#more">Read more...</a></p> 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 
-  </div>
-  <div class="sphinxnext">
-    <h4>Next page</h4>
-    <p class="topless"><a href="part1.html"
-                          title="Next page">&rarr; Reactive programming with Python – Part 1</a></p>
-  </div>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/index.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+        <div class="postmeta">
+        <div class="author">
+            <span>Posted by Antti Kaihola</span>
+        </div>
+        <div class="categories">
+            <span>
+                Filed under:
+                <a href="categories/python.html">python</a></span>
+        </div>
+        <div class="tags">
+            <span>
+                Tags:
+                <a href="tags/dataflow.html">dataflow</a>, <a href="tags/reactive.html">reactive</a>, <a href="tags/lusmu.html">lusmu</a></span>
+        </div>
+        <div class="comments">
+            <a href="http://eniramltd.github.io/devblog/2014/10/24/reactive_dataflow_programming_in_python_part_1.html#disqus_thread" data-disqus-identifier="2014/10/24/reactive_dataflow_programming_in_python_part_1">Leave a comment</a>
+        </div></div><div class="archive_link">
+        <a href="archive.html"> &mdash; Blog Archive &mdash; </a>
+    </div></article><aside class="sidebar"><section><div class="widget">
+    <h1>Recent Posts</h1>
+    <ul><li>
+            <a href="2014/10/24/reactive_dataflow_programming_in_python_part_1.html">Reactive/dataflow programming in Python, part 1</a>
+        </li></ul>
+</div>
+</section><section><div class="widget" id="searchbox" role="search">
+    <h1>Search</h1>
+    <form action="search.html" method="get">
+        <input type="text" name="q" />
+        <button type="submit"><span class="fa fa-search"></span></button>
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="relbar-bottom">
-        
-    <div class="related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="part1.html" title="Reactive programming with Python – Part 1"
-             >next</a> &nbsp; &nbsp;</li>
-    <li><a href="#">Lusmu blog post drafts 0.1 documentation</a> &raquo;</li>
- 
-      </ul>
-    </div>
-    </div>
+</div></section></aside></div> <!-- #main --></div> <!-- #main-container -->
 
-    <div class="footer">
-        &copy; Copyright 2014, Eniram Ltd.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
-    </div>
-    <!-- cloud_sptheme 1.4 -->
-    <div id="disqus_thread"></div>
-        <script type="text/javascript">
-            var disqus_shortname = 'eniramdevblog';
-            (function() {
-                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-            })();
-        </script>
-        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-    </div>
-  </body>
+        <div class="footer-container" role="contentinfo"><footer class="wrapper">&copy; Copyright 2014, Eniram Ltd. Powered by <a href="http://www.tinkerer.me/">Tinkerer</a> and <a href="http://sphinx.pocoo.org/">Sphinx</a>.</footer></div> <!-- footer-container -->
+
+      </div> <!--! end of #container --><script type="text/javascript">    var disqus_shortname = "eniramdevblog";    disqus_count();</script><!--[if lt IE 7 ]>
+          <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
+          <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
+        <![endif]-->
+    </body>
 </html>
