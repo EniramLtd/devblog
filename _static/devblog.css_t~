@@ -1,0 +1,54 @@
+div.section > dl {
+    margin-top: 20px;
+    border-top: solid 1px #d0d0d0;
+    padding-top: 20px;
+}
+
+#disqus_thread {
+    background: #F2F2F2;
+    margin: 0 auto;
+    max-width: 11in;
+    padding: 16px;
+    border-radius: 0.7em;
+    -moz-border-radius: 0.7em;
+    -webkit-border-radius: 0.7em;
+}
+
+a, a.visited {
+    color: #5cbaeb;
+}
+
+a.reference.internal em {
+    font-style: normal;
+}
+
+.graphviz, .caption {
+    background: #fff;
+    padding: 8px;
+}
+
+.graphviz {
+    margin-bottom: 0;
+    -webkit-box-shadow: 1px 1px 2px 0px rgba(0,0,0,0.5);
+    -moz-box-shadow: 1px 1px 2px 0px rgba(0,0,0,0.5);
+    box-shadow: 1px 1px 2px 0px rgba(0,0,0,0.5);    
+}
+
+.graphviz img {
+    max-width: 100%;
+}
+
+.caption {
+    margin-top: 0;
+    margin-top: -2px;
+    color: #93a4ad;
+    font-style: italic;
+    -webkit-box-shadow: 1px 3px 2px 0px rgba(0,0,0,0.5);
+    -moz-box-shadow: 1px 3px 2px 0px rgba(0,0,0,0.5);
+    box-shadow: 1px 3px 2px 0px rgba(0,0,0,0.5);    
+}
+
+div.admonition {
+    font-size: 80%;
+    padding: 0 80px;
+}

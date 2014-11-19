@@ -1,18 +1,73 @@
-<?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0">
-    <channel>
-        <title>Eniram developers' blog</title>
-        <link>http://eniramltd.github.io/devblog/</link>
-        <description>Scientific tools and tricks in Python</description>
-        <language>en-us</language>
-        <pubDate>Wed, 19 Nov 2014 00:00:00 +0200</pubDate>
-        
-        <item>
-            <link>http://eniramltd.github.io/devblog/2014/11/19/reactive_dataflow_programming_in_python_part_2.html</link>
-            <guid>http://eniramltd.github.io/devblog/2014/11/19/reactive_dataflow_programming_in_python_part_2.html</guid>
-            <title><![CDATA[Reactive/dataflow programming in Python, part 2]]></title>
-            <description><![CDATA[<h1>Reactive/dataflow programming in Python, part 2</h1>
-<p>In the <a class="reference internal" href="http://eniramltd.github.io/devblog/2014/10/24/reactive_dataflow_programming_in_python_part_1.html"><em>previous part</em></a> of this series,
+<!DOCTYPE html><!--[if lt IE 7]>      <html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:og="http://ogp.me/ns#"
+    xmlns:fb="https://www.facebook.com/2008/fbml" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:og="http://ogp.me/ns#"
+    xmlns:fb="https://www.facebook.com/2008/fbml" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:og="http://ogp.me/ns#"
+    xmlns:fb="https://www.facebook.com/2008/fbml" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:og="http://ogp.me/ns#"
+    xmlns:fb="https://www.facebook.com/2008/fbml" class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="description" content="This is the blog space for software developers at Eniram Ltd">
+        <meta name="viewport" content="width=device-width">
+        <title>Reactive/dataflow programming in Python, part 2 &mdash; Eniram developers&#39; blog</title>
+            <link rel="stylesheet" href="../../../_static/normalize.css" type="text/css">
+            <link rel="stylesheet" href="../../../_static/sphinx.css" type="text/css">
+            <link rel="stylesheet" href="../../../_static/main.css" type="text/css">
+            <link rel="stylesheet" href="../../../_static/flat.css" type="text/css">
+            <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+            <link rel="stylesheet" href="../../../_static/font-awesome.min.css" type="text/css">
+        <link rel="stylesheet" href="../../../_static/devblog.css" type="text/css" /><link rel="shortcut icon" href="../../../_static/tinkerer.ico" /><!-- Load modernizr and JQuery -->
+        <script src="../../../_static/vendor/modernizr-2.6.2.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="../../../_static/vendor/jquery-1.8.2.min.js"><\/script>')</script>
+        <script src="../../../_static/plugins.js"></script>
+        <script src="../../../_static/main.js"></script>
+        <link rel="next" title="Reactive/dataflow programming in Python, part 1" href="../../10/24/reactive_dataflow_programming_in_python_part_1.html" /><link rel="alternate" type="application/rss+xml" title="RSS" href="../../../rss.html" /><script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.4.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script><script type="text/javascript" src="../../../_static/underscore.js"></script><script type="text/javascript" src="../../../_static/doctools.js"></script><script type="text/javascript" src="../../../_static/disqus.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Scroll to content if on small screen
+            if (screen.width < 480)
+            {
+                $(document).scrollTop(document.getElementsByTagName("article")[0].offsetTop - 44);
+            }
+        });
+    </script></head>
+    <body role="document">
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+        <![endif]-->
+
+      <div id="container"><header role="banner">
+            <hgroup>
+              <h1><a href="../../../index.html">Eniram developers&#39; blog</a></h1><h2>Scientific tools and tricks in Python</h2></hgroup>
+          </header>
+      <nav role="navigation">
+            <ul><li class="quicklink"><a href="http://www.eniram.fi/">Eniram</a></li>
+  <li class="quicklink"><a href="http://www.eniram.fi/technology/">Eniram Technology</a></li><li class="main-nav">
+                  <a href="../../../index.html">Home</a>
+                </li>
+              </ul>
+          </nav><div class="main-container" role="main"><div class="main wrapper clearfix"><article><div class="timestamp postmeta">
+            <span>November 19, 2014</span>
+        </div>
+    <div class="section" id="reactive-dataflow-programming-in-python-part-2">
+<h1>Reactive/dataflow programming in Python, part 2</h1>
+<p>In the <a class="reference internal" href="../../10/24/reactive_dataflow_programming_in_python_part_1.html"><em>previous part</em></a> of this series,
 we introduced <a class="reference external" href="https://github.com/akaihola/lusmu">Lusmu</a>,
 our minimal reactive/dataflow programming framework in Python.
 We clarified dataflow terminology and some of our design choices
@@ -27,7 +82,7 @@ to highlight some characteristics of the framework:</p>
 </ul>
 <p>Also, before we start,
 thanks to readers for feedback on the first part,
-and thanks also to the audience in <a class="reference external" href="http://fi.pycon.org/2014">Pycon Finland 2014</a>
+and thanks also to the audience in <a class="reference external" href="http://fi.pycon.org/2014/">Pycon Finland 2014</a>
 for questions and discussion about our Lusmu presentation!</p>
 <div class="section" id="simplification-no-arcs">
 <h2>Simplification: no arcs</h2>
@@ -35,7 +90,24 @@ for questions and discussion about our Lusmu presentation!</p>
 the input and output ports of nodes explicitly
 with <em>arc</em> objects:</p>
 <p class="graphviz">
-<img src="http://eniramltd.github.io/devblog/_images/graphviz-6c640034cdd3f9ac5cecf3c1722b69935849f235.png" alt="digraph {&#10;    graph [dpi=72];&#10;    rankdir = LR;&#10;    graph [style=rounded; fontname=&quot;Helvetica-Bold&quot;];&#10;    subgraph cluster_node1 {&#10;        label=&quot;node&quot;;&#10;        output_port1 [shape=rect, label=&quot;output port&quot;]; }&#10;    subgraph cluster_node2 {&#10;        label=&quot;node&quot;;&#10;        output_port2 [shape=rect, label=&quot;output port&quot;]; }&#10;    subgraph cluster_node3 {&#10;        label=&quot;node&quot;;&#10;        input_port1 [shape=rect, label=&quot;input port 1&quot;];&#10;        input_port2 [shape=rect, label=&quot;input port 2&quot;];}&#10;    node [label=&quot;&quot;, shape=none; width=0]; edge [label=&quot;arc&quot;];&#10;    output_port1 -&gt; input_port1;&#10;    output_port2 -&gt; input_port2;&#10;}"/>
+<img src="../../../_images/graphviz-6c640034cdd3f9ac5cecf3c1722b69935849f235.png" alt="digraph {
+    graph [dpi=72];
+    rankdir = LR;
+    graph [style=rounded; fontname=&quot;Helvetica-Bold&quot;];
+    subgraph cluster_node1 {
+        label=&quot;node&quot;;
+        output_port1 [shape=rect, label=&quot;output port&quot;]; }
+    subgraph cluster_node2 {
+        label=&quot;node&quot;;
+        output_port2 [shape=rect, label=&quot;output port&quot;]; }
+    subgraph cluster_node3 {
+        label=&quot;node&quot;;
+        input_port1 [shape=rect, label=&quot;input port 1&quot;];
+        input_port2 [shape=rect, label=&quot;input port 2&quot;];}
+    node [label=&quot;&quot;, shape=none; width=0]; edge [label=&quot;arc&quot;];
+    output_port1 -&gt; input_port1;
+    output_port2 -&gt; input_port2;
+}" />
 </p>
 <p class="caption">Figure 1. Dataflow diagram with output ports, input ports and arcs</p>
 <p>In asynchronous systems,
@@ -46,25 +118,40 @@ We can just store the current output port value
 in a <span class="xref py py-attr docutils literal"><span class="pre">data</span></span> attribute inside each node,
 and use an <span class="xref py py-attr docutils literal"><span class="pre">inputs</span></span> attribute to link nodes:</p>
 <p class="graphviz">
-<img src="http://eniramltd.github.io/devblog/_images/graphviz-e96263281caac008b2a3146612d710aed5c66271.png" alt="digraph {&#10;    graph [dpi=72];&#10;    rankdir = RL;&#10;    compound = true;&#10;    graph [style=rounded; fontname=&quot;Helvetica-Bold&quot;];&#10;    subgraph cluster_input_node {&#10;        label=&quot;a = Node()&quot;;&#10;        node [shape=rect];&#10;        data1 [label=&quot;a.data&quot;]; }&#10;    subgraph cluster_op_node {&#10;        label=&quot;b = Node()&quot;;&#10;        node [shape=rect];&#10;        inputs [label=&quot;b.inputs = set([a])&quot;];&#10;        data2 [label=&quot;b.data&quot;]; }&#10;    inputs -&gt; data1 [lhead=cluster_input_node];&#10;}"/>
+<img src="../../../_images/graphviz-e96263281caac008b2a3146612d710aed5c66271.png" alt="digraph {
+    graph [dpi=72];
+    rankdir = RL;
+    compound = true;
+    graph [style=rounded; fontname=&quot;Helvetica-Bold&quot;];
+    subgraph cluster_input_node {
+        label=&quot;a = Node()&quot;;
+        node [shape=rect];
+        data1 [label=&quot;a.data&quot;]; }
+    subgraph cluster_op_node {
+        label=&quot;b = Node()&quot;;
+        node [shape=rect];
+        inputs [label=&quot;b.inputs = set([a])&quot;];
+        data2 [label=&quot;b.data&quot;]; }
+    inputs -&gt; data1 [lhead=cluster_input_node];
+}" />
 </p>
 <p class="caption">Figure 2. Node objects with .data and .inputs attributes</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">It’s important to remember that due to the lack of
-buffering, it is the user’s responsibility to drive the
-graph in a “feed data → fire nodes → read results” loop.
+<p class="last">It&#8217;s important to remember that due to the lack of
+buffering, it is the user&#8217;s responsibility to drive the
+graph in a &#8220;feed&nbsp;data&nbsp;→&nbsp;fire&nbsp;nodes&nbsp;→&nbsp;read&nbsp;results&#8221; loop.
 Feeding multiple rounds of data
 without extracting results in between
 will throw away previous
 data without affecting the results.</p>
 </div>
 <p>A side effect of this design decision is
-that we need a “magic constant” value
-which denotes that the node doesn’t have any data yet:</p>
+that we need a &#8220;magic constant&#8221; value
+which denotes that the node doesn&#8217;t have any data yet:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">NoData</span><span class="p">:</span>
 <span class="gp">... </span>    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="gp">... </span>        <span class="k">return</span> <span class="s">'NO_DATA'</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="s">&#39;NO_DATA&#39;</span>
 <span class="gp">...</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">NO_DATA</span> <span class="o">=</span> <span class="n">NoData</span><span class="p">()</span>
 </pre></div>
@@ -74,7 +161,7 @@ which denotes that the node doesn’t have any data yet:</p>
 <h2>Node classes</h2>
 <p>To represent <em>source</em> and <em>operation nodes</em>,
 we need two different node classes.
-It’s convenient to use a common base class which
+It&#8217;s convenient to use a common base class which
 provides node objects with:</p>
 <ul class="simple">
 <li>a name (for debugging and visualization purposes)</li>
@@ -85,13 +172,13 @@ for keeping the current value of the output port
 (stored in the <span class="xref py py-attr docutils literal"><span class="pre">observers</span></span> attribute)
 whenever the value of the output port changes</li>
 </ul>
-<p>We’ll also define a <span class="xref py py-meth docutils literal"><span class="pre">set_data()</span></span> setter method, which</p>
+<p>We&#8217;ll also define a <span class="xref py py-meth docutils literal"><span class="pre">set_data()</span></span> setter method, which</p>
 <ul class="simple">
 <li>is always used to set the output port value</li>
 <li>invalidates observers whenever the value changes</li>
 </ul>
 <p>The invalidation is the first trick needed for
-the “invalidate/lazy revalidate” scheme
+the &#8220;invalidate/lazy revalidate&#8221; scheme
 (a.k.a. <em>Pull Data</em>).</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">BaseNode</span><span class="p">:</span>
 <span class="gp">... </span>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
@@ -101,7 +188,7 @@ the “invalidate/lazy revalidate” scheme
 <span class="gp">...</span>
 <span class="gp">... </span>    <span class="k">def</span> <span class="nf">set_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 <span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
-<span class="gp">... </span>        <span class="k">print</span><span class="p">(</span><span class="s">'SET  {} = {}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
+<span class="gp">... </span>        <span class="k">print</span><span class="p">(</span><span class="s">&#39;SET  {} = {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
 <span class="gp">... </span>        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">observers</span><span class="p">:</span>
 <span class="gp">... </span>            <span class="n">node</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">NO_DATA</span><span class="p">)</span>
 </pre></div>
@@ -155,7 +242,7 @@ which makes the magic of lazy evaluation happen.</p>
 <span class="gp">... </span>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="gp">... </span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="n">NO_DATA</span><span class="p">:</span>  <span class="c"># fire the node</span>
 <span class="gp">... </span>            <span class="n">inputs_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">]</span>
-<span class="gp">... </span>            <span class="k">print</span><span class="p">(</span><span class="s">'FIRE {}({})'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">inputs_data</span><span class="p">)))</span>
+<span class="gp">... </span>            <span class="k">print</span><span class="p">(</span><span class="s">&#39;FIRE {}({})&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">inputs_data</span><span class="p">)))</span>
 <span class="gp">... </span>            <span class="n">new_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">op</span><span class="p">(</span><span class="o">*</span><span class="n">inputs_data</span><span class="p">)</span>
 <span class="gp">... </span>            <span class="bp">self</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">new_data</span><span class="p">)</span>
 <span class="gp">... </span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
@@ -167,21 +254,21 @@ which makes the magic of lazy evaluation happen.</p>
 <h2>Creating and running a graph</h2>
 <p>We actually now have everything we need
 to construct our previous example.
-Let’s just define our operations
-(see <a class="reference internal" href="http://eniramltd.github.io/devblog/2014/10/24/reactive_dataflow_programming_in_python_part_1.html"><em>part 1</em></a> for details):</p>
+Let&#8217;s just define our operations
+(see <a class="reference internal" href="../../10/24/reactive_dataflow_programming_in_python_part_1.html"><em>part 1</em></a> for details):</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">difference</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
-<span class="gp">... </span>    <span class="sd">"""Calculate the difference between numbers using a simple function"""</span>
+<span class="gp">... </span>    <span class="sd">&quot;&quot;&quot;Calculate the difference between numbers using a simple function&quot;&quot;&quot;</span>
 <span class="gp">... </span>    <span class="k">return</span> <span class="n">b</span> <span class="o">-</span> <span class="n">a</span>
 <span class="gp">...</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">IsInRange</span><span class="p">:</span>
-<span class="gp">... </span>    <span class="sd">"""Check that number is in range using a callable object"""</span>
+<span class="gp">... </span>    <span class="sd">&quot;&quot;&quot;Check that number is in range using a callable object&quot;&quot;&quot;</span>
 <span class="gp">... </span>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">):</span>
-<span class="gp">... </span>        <span class="sd">"""Save the low and high limits"""</span>
+<span class="gp">... </span>        <span class="sd">&quot;&quot;&quot;Save the low and high limits&quot;&quot;&quot;</span>
 <span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">low</span> <span class="o">=</span> <span class="n">low</span>
 <span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">high</span> <span class="o">=</span> <span class="n">high</span>
 <span class="gp">...</span>
 <span class="gp">... </span>    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-<span class="gp">... </span>        <span class="sd">"""Perform the actual check against saved limits"""</span>
+<span class="gp">... </span>        <span class="sd">&quot;&quot;&quot;Perform the actual check against saved limits&quot;&quot;&quot;</span>
 <span class="gp">... </span>        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">low</span> <span class="o">&lt;=</span> <span class="n">data</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">data</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">high</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -189,25 +276,72 @@ Let’s just define our operations
 just instantiate nodes
 and define correct operations and input nodes for them:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">speed_over_ground</span> <span class="o">=</span> <span class="n">SrcNode</span><span class="p">(</span><span class="s">'speed_over_ground'</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">speed_through_water</span> <span class="o">=</span> <span class="n">SrcNode</span><span class="p">(</span><span class="s">'speed_through_water'</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">current</span> <span class="o">=</span> <span class="n">OpNode</span><span class="p">(</span><span class="s">'current'</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">speed_over_ground</span> <span class="o">=</span> <span class="n">SrcNode</span><span class="p">(</span><span class="s">&#39;speed_over_ground&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">speed_through_water</span> <span class="o">=</span> <span class="n">SrcNode</span><span class="p">(</span><span class="s">&#39;speed_through_water&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">current</span> <span class="o">=</span> <span class="n">OpNode</span><span class="p">(</span><span class="s">&#39;current&#39;</span><span class="p">,</span>
 <span class="gp">... </span>                 <span class="n">op</span><span class="o">=</span><span class="n">difference</span><span class="p">,</span>
 <span class="gp">... </span>                 <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">speed_over_ground</span><span class="p">,</span> <span class="n">speed_through_water</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ok_current</span> <span class="o">=</span> <span class="n">OpNode</span><span class="p">(</span><span class="s">'ok_current'</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ok_current</span> <span class="o">=</span> <span class="n">OpNode</span><span class="p">(</span><span class="s">&#39;ok_current&#39;</span><span class="p">,</span>
 <span class="gp">... </span>                    <span class="n">op</span><span class="o">=</span><span class="n">IsInRange</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
 <span class="gp">... </span>                    <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">current</span><span class="p">])</span>
 </pre></div>
 </div>
-<p>Here’s an illustration
+<p>Here&#8217;s an illustration
 of the Python objects and attributes in memory
 after creating this graph:</p>
 <p class="graphviz">
-<img src="http://eniramltd.github.io/devblog/_images/graphviz-deebbcb7919fc6f6ea2e2324c8765e9c6553888b.png" alt="digraph {&#10;    graph [dpi=72, ranksep=0.5, nodesep=0.3];&#10;    rankdir = LR;&#10;    compound = true;&#10;    graph [style=rounded; fontname=&quot;Helvetica-Bold&quot;];&#10;    subgraph cluster_sog {&#10;        label=&quot;speed_over_ground = SrcNode()&quot;;&#10;        sog_observers [shape=rect, label=&quot;observers&quot;];&#10;        speed_over_ground [shape=rect, label=&quot;data&quot;];&#10;        speed_over_ground -&gt; sog_observers [style=invis]; }&#10;    subgraph cluster_stw {&#10;        label=&quot;speed_through_water = SrcNode()&quot;;&#10;        stw_observers [shape=rect, label=&quot;observers&quot;];&#10;        speed_through_water [shape=rect, label=&quot;data&quot;];&#10;        speed_through_water -&gt; stw_observers [style=invis]; }&#10;    subgraph cluster_difference {&#10;        label=&quot;current = OpNode()&quot;;&#10;        op [shape=rect];&#10;        node [shape=rect]; edge [label=&quot;&quot;];&#10;        difference_o [label=&quot;data&quot;];&#10;        inputs;&#10;        # inputs -&gt; op:a [style=invis];&#10;        # inputs -&gt; op:b [style=invis];&#10;        # op:o -&gt; difference_o [style=invis];&#10;        difference_observers [shape=rect, label=&quot;observers&quot;];&#10;        # difference_o -&gt; difference_observers [style=invis];&#10;    }&#10;    subgraph cluster_ok {&#10;        label=&quot;ok_current = OpNode()&quot;;&#10;        node [shape=rect]; edge [label=&quot;&quot;];&#10;        ok_op [label=&quot;op&quot;];&#10;        ok_o [label=&quot;data&quot;];&#10;        ok_inputs [label=&quot;inputs&quot;];&#10;        ok_inputs -&gt; ok_op [style=invis];&#10;        ok_op -&gt; ok_o [style=invis];&#10;    }&#10;    op_difference [shape=record; label=&quot;{{&lt;a&gt;|&lt;b&gt;}|def difference()|&lt;o&gt;}&quot;; fontname=&quot;Helvetica-Bold&quot;];&#10;    op_isinrange [shape=record; label=&quot;{&lt;a&gt;|class IsInRange|&lt;o&gt;}&quot;; fontname=&quot;Helvetica-Bold&quot;];&#10;    op -&gt; op_difference;&#10;    ok_op -&gt; op_isinrange;&#10;    node [label=&quot;&quot;, shape=none; width=0];&#10;    sog_observers -&gt; inputs [lhead=cluster_difference];&#10;    stw_observers -&gt; inputs [lhead=cluster_difference];&#10;    difference_observers -&gt; ok_inputs [lhead=cluster_ok];&#10;    inputs -&gt; sog_observers [lhead=cluster_sog];&#10;    inputs -&gt; stw_observers [lhead=cluster_stw];&#10;    ok_inputs -&gt; difference_observers [lhead=cluster_difference];&#10;}"/>
+<img src="../../../_images/graphviz-deebbcb7919fc6f6ea2e2324c8765e9c6553888b.png" alt="digraph {
+    graph [dpi=72, ranksep=0.5, nodesep=0.3];
+    rankdir = LR;
+    compound = true;
+    graph [style=rounded; fontname=&quot;Helvetica-Bold&quot;];
+    subgraph cluster_sog {
+        label=&quot;speed_over_ground = SrcNode()&quot;;
+        sog_observers [shape=rect, label=&quot;observers&quot;];
+        speed_over_ground [shape=rect, label=&quot;data&quot;];
+        speed_over_ground -&gt; sog_observers [style=invis]; }
+    subgraph cluster_stw {
+        label=&quot;speed_through_water = SrcNode()&quot;;
+        stw_observers [shape=rect, label=&quot;observers&quot;];
+        speed_through_water [shape=rect, label=&quot;data&quot;];
+        speed_through_water -&gt; stw_observers [style=invis]; }
+    subgraph cluster_difference {
+        label=&quot;current = OpNode()&quot;;
+        op [shape=rect];
+        node [shape=rect]; edge [label=&quot;&quot;];
+        difference_o [label=&quot;data&quot;];
+        inputs;
+        # inputs -&gt; op:a [style=invis];
+        # inputs -&gt; op:b [style=invis];
+        # op:o -&gt; difference_o [style=invis];
+        difference_observers [shape=rect, label=&quot;observers&quot;];
+        # difference_o -&gt; difference_observers [style=invis];
+    }
+    subgraph cluster_ok {
+        label=&quot;ok_current = OpNode()&quot;;
+        node [shape=rect]; edge [label=&quot;&quot;];
+        ok_op [label=&quot;op&quot;];
+        ok_o [label=&quot;data&quot;];
+        ok_inputs [label=&quot;inputs&quot;];
+        ok_inputs -&gt; ok_op [style=invis];
+        ok_op -&gt; ok_o [style=invis];
+    }
+    op_difference [shape=record; label=&quot;{{&lt;a&gt;|&lt;b&gt;}|def difference()|&lt;o&gt;}&quot;; fontname=&quot;Helvetica-Bold&quot;];
+    op_isinrange [shape=record; label=&quot;{&lt;a&gt;|class IsInRange|&lt;o&gt;}&quot;; fontname=&quot;Helvetica-Bold&quot;];
+    op -&gt; op_difference;
+    ok_op -&gt; op_isinrange;
+    node [label=&quot;&quot;, shape=none; width=0];
+    sog_observers -&gt; inputs [lhead=cluster_difference];
+    stw_observers -&gt; inputs [lhead=cluster_difference];
+    difference_observers -&gt; ok_inputs [lhead=cluster_ok];
+    inputs -&gt; sog_observers [lhead=cluster_sog];
+    inputs -&gt; stw_observers [lhead=cluster_stw];
+    ok_inputs -&gt; difference_observers [lhead=cluster_difference];
+}" />
 </p>
 <p class="caption">Figure 3. Objects and attributes of the example graph</p>
 <p>Finally,
-let’s test the graph with some data.
+let&#8217;s test the graph with some data.
 Here the print statements help us follow
 how data flows through the graph
 and how observer nodes are invalidated:</p>
@@ -236,7 +370,7 @@ and how observer nodes are invalidated:</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Looking carefully at the debug output,
-you’ll notice an obvious shortcoming
+you&#8217;ll notice an obvious shortcoming
 of this simplified implementation:
 All observer nodes are invalidated recursively
 even if they already have no value in the output port.
@@ -245,54 +379,48 @@ This is handled properly in the real implementation of Lusmu.</p>
 </div>
 <div class="section" id="summary">
 <h2>Summary</h2>
-<p>We’ve created a stripped-down dataflow framework prototype
+<p>We&#8217;ve created a stripped-down dataflow framework prototype
 in 29 lines of effective Python code.
 The prototype illustrates how lazy evaluation work in Lusmu,
 how the graph is built in memory,
 and what restrictions non-buffered dataflow
 sets for using the graph.</p>
 <p>In the next part,
-we’ll look at some useful features
+we&#8217;ll look at some useful features
 for scientific data processing.</p>
 </div>
-]]></description>
-             <pubDate>Wed, 19 Nov 2014 00:00:00 +0200</pubDate>
-        </item>
-    
-        <item>
-            <link>http://eniramltd.github.io/devblog/2014/10/24/reactive_dataflow_programming_in_python_part_1.html</link>
-            <guid>http://eniramltd.github.io/devblog/2014/10/24/reactive_dataflow_programming_in_python_part_1.html</guid>
-            <title><![CDATA[Reactive/dataflow programming in Python, part 1]]></title>
-            <description><![CDATA[<h1>Reactive/dataflow programming in Python, part 1</h1>
-<p>At <a class="reference external" href="http://www.eniram.fi">Eniram</a>,
-we help shipping companies reduce fuel consumption
-using a data-driven approach.
-Our servers crunch measurement data
-for hundreds of variables
-from hundreds of ships
-sailing around the world.</p>
-<p>We validate incoming data,
-and perform analysis and statistical modeling based on the data.
-In some cases, processing takes place on board ships without connectivity
-or on workstations of data analysts.</p>
-<p>It’s desirable to have one unified toolchain
-for data processing.
-The tools should enable non-programmers to specify rules
-for data validation and analysis.</p>
-<p class="readmorewrapper"><a class="readmore" href="http://eniramltd.github.io/devblog/2014/10/24/reactive_dataflow_programming_in_python_part_1.html#more">Read more...</a></p> 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-]]></description>
-            <category><![CDATA[ python ]]></category>
-             <pubDate>Fri, 24 Oct 2014 00:00:00 +0300</pubDate>
-        </item>
-    
-    </channel>
-</rss>
+</div>
+
+    <div class="postmeta">
+        <div class="author">
+            <span>Posted by Eniram Ltd</span>
+        </div>
+        
+        
+        </div><ul class="related clearfix">
+            <li class="left"></li>
+            <li class="right"><a href="../../10/24/reactive_dataflow_programming_in_python_part_1.html">Reactive/dataflow programming in Python, part 1</a> &raquo; </li>
+        </ul><div id="disqus_thread"></div><script type="text/javascript">    var disqus_shortname = "eniramdevblog";    var disqus_identifier = "2014/11/19/reactive_dataflow_programming_in_python_part_2";    disqus_thread();</script><noscript>Please enable JavaScript to view the    <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></article><aside class="sidebar"><section><div class="widget">
+    <h1>Recent Posts</h1>
+    <ul><li>
+            <a href="#">Reactive/dataflow programming in Python, part 2</a>
+        </li><li>
+            <a href="../../10/24/reactive_dataflow_programming_in_python_part_1.html">Reactive/dataflow programming in Python, part 1</a>
+        </li></ul>
+</div>
+</section><section><div class="widget" id="searchbox" role="search">
+    <h1>Search</h1>
+    <form action="../../../search.html" method="get">
+        <input type="text" name="q" />
+        <button type="submit"><span class="fa fa-search"></span></button>
+    </form>
+</div></section></aside></div> <!-- #main --></div> <!-- #main-container -->
+
+        <div class="footer-container" role="contentinfo"><footer class="wrapper">&copy; Copyright 2014, Eniram Ltd. Powered by <a href="http://www.tinkerer.me/">Tinkerer</a> and <a href="http://sphinx.pocoo.org/">Sphinx</a>.</footer></div> <!-- footer-container -->
+
+      </div> <!--! end of #container --><!--[if lt IE 7 ]>
+          <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
+          <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
+        <![endif]-->
+    </body>
+</html>
