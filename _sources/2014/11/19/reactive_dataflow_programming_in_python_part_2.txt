@@ -15,6 +15,8 @@ to highlight some characteristics of the framework:
 - Pull Data (invalidate / lazy-revalidate)
 - Doubly Linked Adjacency List as the graph data structure
 
+.. more::
+
 Also, before we start,
 thanks to readers for feedback on the first part,
 and thanks also to the audience in `Pycon Finland 2014`_
