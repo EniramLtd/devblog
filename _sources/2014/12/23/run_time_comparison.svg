@@ -37,9 +37,9 @@
  <path fill="none" stroke="rgb(179,179,179)" stroke-linejoin="round" d="M 1617,1499 L 1767,1499"/>
  <path fill="none" stroke="rgb(179,179,179)" stroke-linejoin="round" d="M 1617,1499 L 1767,1499"/>
  <path fill="none" stroke="rgb(179,179,179)" stroke-linejoin="round" d="M 1767,8171 L 1767,1499"/>
- <path fill="rgb(0,69,134)" stroke="none" d="M 12200,8171 L 14519,8171 14519,2843 12200,2843 12200,8171 Z"/>
- <path fill="rgb(0,69,134)" stroke="none" d="M 7564,8171 L 9881,8171 9881,2499 7564,2499 7564,8171 Z"/>
- <path fill="rgb(0,69,134)" stroke="none" d="M 2926,8171 L 5245,8171 5245,7333 2926,7333 2926,8171 Z"/>
+ <path fill="rgb(0,69,134)" stroke="none" d="M 12200,8171 L 14519,8171 14519,2862 12200,2862 12200,8171 Z"/>
+ <path fill="rgb(0,69,134)" stroke="none" d="M 7564,8171 L 9881,8171 9881,2480 7564,2480 7564,8171 Z"/>
+ <path fill="rgb(0,69,134)" stroke="none" d="M 2926,8171 L 5245,8171 5245,7346 2926,7346 2926,8171 Z"/>
  <text class="TextShape"><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400"><tspan class="TextPosition" x="3463" y="8739"><tspan fill="rgb(0,0,0)" stroke="none">Analytic</tspan></tspan></tspan></text>
  <text class="TextShape"><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400"><tspan class="TextPosition" x="8088" y="8739"><tspan fill="rgb(0,0,0)" stroke="none">Numeric</tspan></tspan></tspan></text>
  <text class="TextShape"><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400"><tspan class="TextPosition" x="12871" y="8739"><tspan fill="rgb(0,0,0)" stroke="none">Hybrid</tspan></tspan></tspan></text>

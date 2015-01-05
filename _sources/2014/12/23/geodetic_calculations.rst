@@ -24,7 +24,7 @@ The need for accurate geodetic computations
 On a traditional Mercator projection [#]_ map, such as the one shown in `Figure 1`_,
 transatlantic navigation seems simple: just measure the angle between
 your current location and the target, take a compass heading and steam on.
-The red line on `Figure 1`_ shows the rhumb line [#]_ between Southampton and New York.
+The red line on `Figure 1`_ shows the rhumb line [#]_ between Southampton and Miami.
 Indeed, due to its simplicity, that still is a commonly used navigation method.
 At this day, though, it's not really smart. If you draw the same route on a
 different projection, such as the orthographic projection [#]_ in `Figure 2`_, it
@@ -46,9 +46,9 @@ The shortest route between two points on a spherical surface is along the
 great circle [#]_, shown on `Figure 1`_ and `Figure 2`_ by the yellow lines. As indicated by the
 curved line on the Mercator projection, the compass
 heading varies along the great circle route, but nevertheless, that is the
-optimal route to take. The rhumb line distance in our example is 3106
-nautical miles (nmi), while the great circle distance is 2992 nmi,
-a difference of 3.7%. On a suitable leg, the distance difference might be
+optimal route to take. The rhumb line distance in our example is 3932
+nautical miles (nmi), while the great circle distance is 3804 nmi,
+a difference of 3.4%. On a suitable leg, the distance difference might be
 considerably higher.
 
 .. [#] http://en.wikipedia.org/wiki/Great_circle
@@ -70,14 +70,20 @@ less than 0.3%) if spherical assumption is used. Since the fuel savings
 provided by `Eniram`_'s products are in the order of 2--6%, we definitely don't
 have a sufficient margin to allow that kind of errors in our calculations.
 
+As a practical example, on the Southampton--Miami voyage, the distance measured
+on a WGS84 geoid is 6.6 nmi larger than on a spherical surface, an error of
+0.17%. This error corresponds to 20--30 minutes of increased travel time,
+or close to 1500-2000 USD of fuel costs on a big ship -- certainly nothing to
+sneer at.
+
 .. [#] http://en.wikipedia.org/wiki/Figure_of_the_Earth
 .. _Eniram: http://www.eniram.fi
 
-At this point, the great circle calculations get really complex.
+On ellipsoid surfaces, the great circle calculations get really complex.
 No closed-form formula exist for most of the problems, and
 numerical solutions must be used. Of course, excellent libraries performing
 all the required calculations for different ellipsoids exist, e.g. `proj.4`_
-(FIXME: link) and its Python bindings, pyproj_. However, the
+and its Python bindings, pyproj_. However, the
 numerical formula are much slower than the analytical ones. Many common
 operations require a massive amount of geodetic calculations. For example, to
 simply find out the distance remaining, we need to project the ship's actual location
@@ -134,3 +140,9 @@ insufficient accuracy, or a really accurate implementation running with a
 glacial speed. By designing our implementation carefully, we are able to get
 the best of the both worlds.
 
+The calculations above leave much room for improvement regarding performance.
+Direct Numpy implementation of the analytic spherical formula, even when
+vectorized, requires multiple temporary arrays to store the intermediate results.
+The ellipsoid versions do not run vectorized at all, but need to be looped
+instead. In the next blog post, we will pluck some low-hanging performance fruit
+by re-implementing our geodesy calculations in Cython.
