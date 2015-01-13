@@ -158,6 +158,8 @@ by re-implementing our geodesy calculations in Cython_.
 .. [#movabletype] See e.g. http://www.movable-type.co.uk/scripts/latlong.html
 .. [#wgs84] http://en.wikipedia.org/wiki/World_Geodetic_System
 
+..
+
     *Matti Airas is a senior research developer at Eniram. He is a member of
     Eniram's Algorithm Development team, responsible for developing the Python
     based backbone of Eniram's products. When not at work, he enjoys performing
