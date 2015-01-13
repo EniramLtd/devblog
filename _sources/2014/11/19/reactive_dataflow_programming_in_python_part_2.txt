@@ -1,6 +1,12 @@
 Reactive/dataflow programming in Python, part 2
 ===============================================
 
+.. author:: Antti Kaihola
+.. categories:: python
+.. tags:: dataflow, reactive, lusmu
+.. comments::
+
+
 In the :doc:`previous part </2014/10/24/reactive_dataflow_programming_in_python_part_1>` of this series,
 we introduced Lusmu_, 
 our minimal reactive/dataflow programming framework in Python.

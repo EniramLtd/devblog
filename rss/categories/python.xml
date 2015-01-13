@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+    <channel>
+        <title>Eniram developers' blog - python</title>
+        <link>http://eniramltd.github.io/devblog/</link>
+        <description>Scientific tools and tricks in Python</description>
+        <language>en-us</language>
+        <pubDate>Fri, 24 Oct 2014 00:00:00 +0300</pubDate>
+        
+        <item>
+            <link>http://eniramltd.github.io/devblog/2014/10/24/reactive_dataflow_programming_in_python_part_1.html</link>
+            <guid>http://eniramltd.github.io/devblog/2014/10/24/reactive_dataflow_programming_in_python_part_1.html</guid>
+            <title><![CDATA[Reactive/dataflow programming in Python, part 1]]></title>
+            <description><![CDATA[<h1>Reactive/dataflow programming in Python, part 1</h1>
+<p>At <a class="reference external" href="http://www.eniram.fi/">Eniram</a>,
+we help shipping companies reduce fuel consumption
+using a data-driven approach.
+Our servers crunch measurement data
+for hundreds of variables
+from hundreds of ships
+sailing around the world.</p>
+<p>We validate incoming data,
+and perform analysis and statistical modeling based on the data.
+In some cases, processing takes place on board ships without connectivity
+or on workstations of data analysts.</p>
+<p>It’s desirable to have one unified toolchain
+for data processing.
+The tools should enable non-programmers to specify rules
+for data validation and analysis.</p>
+<p class="readmorewrapper"><a class="readmore" href="http://eniramltd.github.io/devblog/2014/10/24/reactive_dataflow_programming_in_python_part_1.html#more">Read more...</a></p> 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+]]></description>
+            <category><![CDATA[ python ]]></category>
+             <pubDate>Fri, 24 Oct 2014 00:00:00 +0300</pubDate>
+        </item>
+    
+        <item>
+            <link>http://eniramltd.github.io/devblog/2014/11/19/reactive_dataflow_programming_in_python_part_2.html</link>
+            <guid>http://eniramltd.github.io/devblog/2014/11/19/reactive_dataflow_programming_in_python_part_2.html</guid>
+            <title><![CDATA[Reactive/dataflow programming in Python, part 2]]></title>
+            <description><![CDATA[<h1>Reactive/dataflow programming in Python, part 2</h1>
+<p>In the <a class="reference internal" href="http://eniramltd.github.io/devblog/2014/10/24/reactive_dataflow_programming_in_python_part_1.html"><em>previous part</em></a> of this series,
+we introduced <a class="reference external" href="https://github.com/akaihola/lusmu">Lusmu</a>,
+our minimal reactive/dataflow programming framework in Python.
+We clarified dataflow terminology and some of our design choices
+using simple usage examples.</p>
+<p>In this part,
+we create a stripped-down implementation of the framework
+to highlight some characteristics of the framework:</p>
+<ul class="simple">
+<li>Synchronous Activation</li>
+<li>Pull Data (invalidate / lazy-revalidate)</li>
+<li>Doubly Linked Adjacency List as the graph data structure</li>
+</ul>
+<p class="readmorewrapper"><a class="readmore" href="http://eniramltd.github.io/devblog/2014/11/19/reactive_dataflow_programming_in_python_part_2.html#more">Read more...</a></p> 
+ 
+ 
+ 
+ 
+]]></description>
+            <category><![CDATA[ python ]]></category>
+             <pubDate>Wed, 19 Nov 2014 00:00:00 +0200</pubDate>
+        </item>
+    
+        <item>
+            <link>http://eniramltd.github.io/devblog/2015/01/12/geodetic_calculations.html</link>
+            <guid>http://eniramltd.github.io/devblog/2015/01/12/geodetic_calculations.html</guid>
+            <title><![CDATA[Measuring geodetic distance calculation performance]]></title>
+            <description><![CDATA[<h1>Measuring geodetic distance calculation performance</h1>
+<div class="section" id="introduction">
+<h2>Introduction</h2>
+<p>Earth is not flat, although, on many occasions, I wished it was.
+Geometric calculations such as finding the distance between two points
+or the closest distance between a line and a point are simple on flat surfaces,
+but things become much more complex on a curved surface. Instead of geometric,
+these operations are called <a class="reference external" href="http://en.wikipedia.org/wiki/Geodesy">geodetic</a> calculations.</p>
+<p class="readmorewrapper"><a class="readmore" href="http://eniramltd.github.io/devblog/2015/01/12/geodetic_calculations.html#more">Read more...</a></p></div>
+ 
+ 
+ 
+]]></description>
+            <category><![CDATA[ python ]]></category>
+             <pubDate>Mon, 12 Jan 2015 00:00:00 +0200</pubDate>
+        </item>
+    
+    </channel>
+</rss>
