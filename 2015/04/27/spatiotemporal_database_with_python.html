@@ -1,0 +1,400 @@
+<!DOCTYPE html><!--[if lt IE 7]>      <html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:og="http://ogp.me/ns#"
+    xmlns:fb="https://www.facebook.com/2008/fbml" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:og="http://ogp.me/ns#"
+    xmlns:fb="https://www.facebook.com/2008/fbml" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:og="http://ogp.me/ns#"
+    xmlns:fb="https://www.facebook.com/2008/fbml" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:og="http://ogp.me/ns#"
+    xmlns:fb="https://www.facebook.com/2008/fbml" class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="description" content="This is the blog space for software developers at Eniram Ltd">
+        <meta name="viewport" content="width=device-width">
+        <title>Implementing a geospatial database with Python &mdash; Eniram developers&#39; blog</title>
+            <link rel="stylesheet" href="../../../_static/normalize.css" type="text/css">
+            <link rel="stylesheet" href="../../../_static/sphinx.css" type="text/css">
+            <link rel="stylesheet" href="../../../_static/main.css" type="text/css">
+            <link rel="stylesheet" href="../../../_static/flat.css" type="text/css">
+            <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+            <link rel="stylesheet" href="../../../_static/font-awesome.min.css" type="text/css">
+        <link rel="stylesheet" href="../../../_static/devblog.css" type="text/css" /><link rel="shortcut icon" href="../../../_static/tinkerer.ico" /><!-- Load modernizr and JQuery -->
+        <script src="../../../_static/vendor/modernizr-2.6.2.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="../../../_static/vendor/jquery-1.8.2.min.js"><\/script>')</script>
+        <script src="../../../_static/plugins.js"></script>
+        <script src="../../../_static/main.js"></script>
+        <link rel="next" title="Measuring geodetic distance calculation performance" href="../../01/12/geodetic_calculations.html" /><link rel="alternate" type="application/rss+xml" title="RSS" href="../../../rss.html" /><script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script><script type="text/javascript" src="../../../_static/underscore.js"></script><script type="text/javascript" src="../../../_static/doctools.js"></script><script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><script type="text/javascript" src="../../../_static/disqus.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Scroll to content if on small screen
+            if (screen.width < 480)
+            {
+                $(document).scrollTop(document.getElementsByTagName("article")[0].offsetTop - 44);
+            }
+        });
+    </script></head>
+    <body role="document">
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+        <![endif]-->
+
+      <div id="container"><header role="banner">
+            <hgroup>
+              <h1><a href="../../../index.html">Eniram developers&#39; blog</a></h1><h2>Scientific tools and tricks in Python</h2></hgroup>
+          </header>
+      <nav role="navigation">
+            <ul><li class="quicklink"><a href="http://www.eniram.fi/">Eniram</a></li>
+  <li class="quicklink"><a href="http://www.eniram.fi/technology/">Eniram Technology</a></li><li class="main-nav">
+                  <a href="../../../index.html">Home</a>
+                </li>
+              </ul>
+          </nav><div class="main-container" role="main"><div class="main wrapper body clearfix"><article><div class="timestamp postmeta">
+            <span>April 27, 2015</span>
+        </div>
+    <div class="section" id="implementing-a-geospatial-database-with-python">
+<h1>Implementing a geospatial database with Python</h1>
+<div class="section" id="introduction">
+<h2>Introduction</h2>
+<p>When we model and optimize energy consumption of ships we typically
+deal with large geospatial and temporal datasets.  For instance, most
+commonly we need to find the values of various meteorological
+forecasts along the whole of a vessel&#8217;s route.  Such a route may span
+across oceans and can take many days for a ship to complete.  Also, we
+would like the data to be delivered on-board as fast as possible.
+Suffice it to say, our production environment needs at least robust
+and reliable storage of the data and effective access to it.</p>
+<div id="more"> </div><p>We have decided to use a somewhat custom approach in our databases.
+The base of our databases are <a class="reference external" href="http://www.unidata.ucar.edu/software/netcdf/">NetCDF4</a> files, from which data can be
+extracted efficiently.  Initially we thought that there should exist
+standard tools that would fit to our problems, but we were surprised
+and disappointed to find out that this is not the case.  The biggest
+caveat of existing tools seems to be that temporal dimension isn&#8217;t at
+level with spatial ones.  For us, the treatment of time should be in
+many ways analogous to the treatment of spatial dimensions.</p>
+<p>In this post, we will show an example database implementation that
+uses NetCDF4 files to store the data.  This highlights some of the
+problems we have encountered and design choices we have made.</p>
+<p>Before diving into the example, we will spend a little time explaining
+the terminology and our data. If you just one want to see the code and
+skip all the rambling, go to <a class="reference internal" href="#code-example"><em>Basic elements of our database solution</em></a>.  After the code
+example we will discuss briefly other tools we have investigated.</p>
+</div>
+<div class="section" id="short-introduction-to-gis-concepts">
+<h2>Short introduction to GIS concepts</h2>
+<p>Geospatial libraries usually use the terminology of GIS (Geographic
+information systems), and we will also use it in this post.  In this
+section two basic objects are discussed: <em>vector</em> and <em>raster</em>.
+Examples of the objects can be found in visualizations of
+<a class="reference internal" href="#our-data"><em>Our data</em></a>.</p>
+<p>We are mostly concerned with raster data in our applications.  A
+raster object can contain one or more matrices of equal size, where
+each cell of a matrix corresponds to a patch, or a pixel, in some
+geographical location.  The cell value can then be a physical quantity
+like temperature, humidity, or elevation, at the corresponding
+location.</p>
+<p>In our data raster pixel locations are expressed in equally spaced
+latitude and longitude values.  These latitude and longitude values
+further correpond to a certain model of Earth, in our case <a class="reference external" href="http://en.wikipedia.org/wiki/World_Geodetic_System">WGS84</a>.</p>
+<p>A raster can contain multiple bands, i.e., data matrices.  For
+instance, if a raster only expresses a color value in each pixel,
+there can be three bands, red, green, and blue.  Another example is
+our sea current data, which contains north and east components.  The
+two components could be expressed as their own bands.  However, in our
+databases we have defined raster bands to express different time
+instances.</p>
+<p>Another key concept of GIS is an object called vector.  Vector is
+referenced to fixed geographic points but not to pixels.  Vector can
+also contain attributes to each point.  Typical examples of vector
+features are roads, rivers, coastal lines, or boundaries of countries.
+In our case the route of a ship can be considered as a vector feature.</p>
+</div>
+<div class="section" id="our-data">
+<span id="id1"></span><h2>Our data</h2>
+<p>This post focuses on forecast data of globally gridded simulation
+values that describe different meteorological variables at sea.</p>
+<p>Our data is typically downloaded on-board a ship at fixed time
+intervals or when a ship visits a port.  It is only practical to
+download that spatio-temporal subset of meteorological data which is
+relevant for the ship&#8217;s voyage.</p>
+<p>One use case for our data is speed optimization in which the latitude
+and longitude points of a route are known but exact time points are
+variables in the optimization.  In other applications we may also wish
+to optimize the route.  In this case also latitude and longitude
+points are not fixed when the data is downloaded.  When we download
+data from a database, there needs to be enough of it to cover
+different use cases.</p>
+<p>An example dataset is described below in three figures.  These
+visualize forecast data of one variable at different levels.  <a class="reference internal" href="#figure-1">Figure
+1</a> shows a close-up on what raster data looks like, and how spatial
+points between pixel locations can be approximated with linear
+interpolation.</p>
+<div class="figure align-center">
+<img alt="../../../_images/few_pixels.png" src="../../../_images/few_pixels.png" />
+<p class="caption"><span class="target" id="figure-1">Figure 1</span>: Only a few pixels from a relative humidity raster.
+The right plot shows linearly interpolated pixel values.  A point of
+interest &#8216;x&#8217; is plotted to highlight the problem of estimating a
+value in between pixel center points.</p>
+</div>
+<p><a class="reference internal" href="#figure-2">Figure 2</a> views the raster data globally for one time instance.  In
+the figure a possible ship route is visualized to describe the extent
+of data that may need to be extracted from the raster.</p>
+<div class="figure align-center">
+<img alt="../../../_images/humidity_world.png" src="../../../_images/humidity_world.png" />
+<p class="caption"><span class="target" id="figure-2">Figure 2</span>: Relative humidity raster band for one time instance.</p>
+</div>
+<p><a class="reference internal" href="#figure-3">Figure 3</a> visualizes the two time dimensions that we have in our
+data.  The first time dimension tells us what time instance a raster
+applies to.  The second time dimension is the release time of a
+forecast.  Usually there is overlap between different forecast
+releases and ideally we would like to use the newest available
+forecasts for each route time point.</p>
+<p>The time axis also contains example route points.  When these points
+are not exactly aligned with forecast time instances, we need to
+interpolate to get proper estimates for forecasts.</p>
+<div class="figure align-center">
+<img alt="../../../_images/forecasts.png" src="../../../_images/forecasts.png" />
+<p class="caption"><span class="target" id="figure-3">Figure 3</span>: Many relative humidity rasters with bands
+corresponding to different time instances.  Red and green lines
+both denote possible collections of data matrices used for our
+optimizations.  First, red line denotes the data that is obtained
+in real-time at the start of the route.  Green line then denotes
+data where we have updated the last three matrices to more recent
+forecasts, which were not available at the start of the route.</p>
+</div>
+</div>
+<div class="section" id="basic-elements-of-our-database-solution">
+<span id="code-example"></span><h2>Basic elements of our database solution</h2>
+<p>In this section we show by a small example how we have built our
+databases on NetCDF4 files which have been mounted to a local
+filesystem.  The following code is far from production ready, but it
+should highlight some of the design choices we have made.</p>
+<p>The following code moderately exploits <a class="reference external" href="http://www.numpy.org/">NumPy</a>, <a class="reference external" href="http://scipy.org/scipylib/">Scipy</a>, and <a class="reference external" href="http://pandas.pydata.org/">Pandas</a>.
+If you are unfamiliar with these numerical tools, you probably have to
+consult their documentation to understand the details.</p>
+<p>In this example we use only one NetCDF4 file for <a class="reference external" href="ftp://ftp.cdc.noaa.gov/Datasets/ncep.reanalysis/pressure/air.2015.nc">air temperature</a>.
+If you wish to run the code, you have to include this file in your
+current working directory.  This particular data file isn&#8217;t used in
+our products, but the structure resembles that of our actual data.</p>
+<p>We start the example by importing the numerical tools and a class that
+can open NetCDF4 files for reading:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">interpn</span>
+<span class="kn">from</span> <span class="nn">netCDF4</span> <span class="kn">import</span> <span class="n">Dataset</span>
+</pre></div>
+</div>
+<p>Then let&#8217;s define what the final output will be like.  We want to
+create a database class from which we can request forecast data for a
+ship&#8217;s route.  We would like the database to provide us with regularly
+gridded data so that we can then easily use SciPy&#8217;s interpolator
+estimate values for the route.  Expressed in code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="c"># &quot;random&quot; coordinates</span>
+    <span class="n">lat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="mf">30.</span><span class="p">,</span> <span class="mf">30.2</span><span class="p">,</span> <span class="mf">30.4</span><span class="p">,</span> <span class="mf">30.9</span><span class="p">]</span>
+    <span class="n">lon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="mf">150.1</span><span class="p">,</span> <span class="mf">150.2</span><span class="p">,</span> <span class="mf">151.5</span><span class="p">,</span> <span class="mf">152.</span><span class="p">]</span>
+    <span class="c"># hours since 1800-01-01 00:00:0.0</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="mf">1884649.</span><span class="p">,</span> <span class="mf">1884655.</span><span class="p">,</span> <span class="mf">1884660.</span><span class="p">,</span> <span class="mf">1884670.</span><span class="p">]</span>
+    <span class="n">route</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">time</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">]</span>
+
+    <span class="c"># Example data contains variable &#39;air&#39; for air temperature</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">()</span>
+    <span class="n">clipped_data</span><span class="p">,</span> <span class="n">axis_points</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">clip_data</span><span class="p">(</span><span class="n">route</span><span class="p">,</span> <span class="s">&#39;air&#39;</span><span class="p">)</span>
+
+    <span class="c"># Flip latitude axis because that is not ascending in our data</span>
+    <span class="n">axis_points</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="n">clipped_data</span> <span class="o">=</span> <span class="n">clipped_data</span><span class="p">[:,::</span><span class="o">-</span><span class="mi">1</span><span class="p">,:]</span>
+
+    <span class="n">interpolated_values</span> <span class="o">=</span> <span class="n">interpn</span><span class="p">(</span><span class="n">axis_points</span><span class="p">,</span> <span class="n">clipped_data</span><span class="p">,</span> <span class="n">route</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Above, clipping the data means that we extract a &#8220;cube&#8221; of raster
+points so that all the three dimensional route points are contained
+within the cube&#8217;s outermost cells.  <span class="docutils literal"><span class="pre">axis_points</span></span> is then a tuple of
+three arrays which contain time, latitude and longitude values that
+correspond to the cells inside the cube.</p>
+<p>Now we can continue implementing the actual database class:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Database</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">clip_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">route</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read subsets of data raster data to cover all requested points</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Vectors that define the route</span>
+        <span class="n">time</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span> <span class="o">=</span> <span class="n">route</span><span class="o">.</span><span class="n">T</span>
+        <span class="c"># Open required files and group time instances according to them</span>
+        <span class="n">datasets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_datasets</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">varname</span><span class="p">)</span>
+        <span class="c"># Loop over files and time vectors corresponding to them</span>
+        <span class="k">for</span> <span class="n">ds</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">datasets</span><span class="p">:</span>
+            <span class="n">clipped</span><span class="p">,</span> <span class="n">axis_points</span> <span class="o">=</span> <span class="n">_clip_one_dataset</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="c"># We should concatenate all clipped data according to time axis.</span>
+        <span class="c"># We should also concatenate all time axis axis_points.</span>
+        <span class="c"># Latitude and longitude axis_points are the same in all.</span>
+
+        <span class="k">return</span> <span class="n">clipped</span><span class="p">,</span> <span class="n">axis_points</span>
+
+    <span class="k">def</span> <span class="nf">_get_datasets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Find files from which to get variable for requested times</span>
+
+<span class="sd">        All database files contain different time instances.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Return only one example data set, which contains all</span>
+        <span class="c"># times that can requested</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="n">Dataset</span><span class="p">(</span><span class="s">&#39;air.2015.nc&#39;</span><span class="p">),</span> <span class="n">time</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>Nothing complex there.  The idea in <span class="docutils literal"><span class="pre">clip_data</span></span> is that the database
+instance first looks at the requested times and then opens
+corresponding NetCDF4 files.  Then the vector for requested times is
+divided according to the opened files.</p>
+<p>Now the index of database files is completely missing, as well as the
+logic that decides which files to open.  These are minor
+implementation details which we have chosen to skip here.  Instead, we
+just open one file in the current working directory.  In reality the
+different clipped data should also be concatenated together, but that
+is another detail which we skip for simplicity.</p>
+<p>The function that hasn&#8217;t yet been defined, <span class="docutils literal"><span class="pre">_clip_one_dataset</span></span>,
+accesses only the needed values in NetCDF4 files and returns those as
+its first return value.  The second return values contains axis values
+which correspond to the returned point values.  In this example the
+function is defined as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">_clip_one_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Find all NetCDF4 file values that cover the requested axis values</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">get_required</span><span class="p">(</span><span class="n">axis_name</span><span class="p">,</span> <span class="n">requested_values</span><span class="p">):</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">axis_name</span><span class="p">][:])</span>
+        <span class="n">axis_step</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">axis</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">axis</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">axis</span><span class="p">[(</span><span class="n">axis</span> <span class="o">&gt;</span> <span class="n">requested_values</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">-</span> <span class="n">axis_step</span><span class="p">)</span>
+                    <span class="o">&amp;</span> <span class="p">(</span><span class="n">axis</span> <span class="o">&lt;</span> <span class="n">requested_values</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="n">axis_step</span><span class="p">)]</span>
+
+    <span class="n">required_lat</span> <span class="o">=</span> <span class="n">get_required</span><span class="p">(</span><span class="s">&#39;lat&#39;</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span>
+    <span class="n">required_lon</span> <span class="o">=</span> <span class="n">get_required</span><span class="p">(</span><span class="s">&#39;lon&#39;</span><span class="p">,</span> <span class="n">lon</span><span class="p">)</span>
+    <span class="n">required_time</span> <span class="o">=</span> <span class="n">get_required</span><span class="p">(</span><span class="s">&#39;time&#39;</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+
+    <span class="n">clipped</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">varname</span><span class="p">][</span><span class="n">required_time</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+                                         <span class="mi">0</span><span class="p">,</span>  <span class="c"># height axis</span>
+                                         <span class="n">required_lat</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+                                         <span class="n">required_lon</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+
+    <span class="n">axis_points</span> <span class="o">=</span> <span class="p">(</span><span class="n">required_time</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+                   <span class="n">required_lat</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+                   <span class="n">required_lon</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">clipped</span><span class="p">,</span> <span class="n">axis_points</span>
+</pre></div>
+</div>
+<p>The function first defines a smaller function which finds sub-sets of
+axes with that surround requested axis values.  After the sub-sets are
+obtained, the corresponding forecast values are extract using the
+<span class="docutils literal"><span class="pre">Dataset</span></span> API.  Here there is an extra axis variables, height, which
+was also contained in this example data.</p>
+<p>And that&#8217;s it!  There is our rudimentary database implementation.</p>
+</div>
+<div class="section" id="discussion-another-way-to-build-similar-functionality">
+<h2>Discussion: another way to build similar functionality</h2>
+<p>In this post we have discussed building a simple custom geospatial
+database on top of NetCDF4 files.  Most of the discussion has been
+around only one aspect of the database: how data can be extracted from
+files and returned through a simple Python API.  In real-life many
+other problems have to be solved by our database: indexing of data
+files for effective access, different query functionalities, error
+handling, different APIs (e.g., REST over web), and so forth.</p>
+<p>Any unnecessary custom building blocks are worrying as they bring
+about maintenance burden, and their development is costly at any rate.
+One existing database that we have considered for our data is
+<a class="reference external" href="http://www.postgresql.org/">PostgreSQL</a> with <a class="reference external" href="http://postgis.net/">PostGIS</a> extension that supports all kinds of
+geospatial data.  PostGIS project is part of <a class="reference external" href="http://www.osgeo.org/">OSGeo</a> foundation which
+provides all kinds of tools for Geospatial data processing and
+analysis.  Some other OSGeo libraries are already incorporated into
+our codebase.</p>
+<p>PostGIS defines a raster data type in which our forecast data could be
+expressed.  Basically, PostGIS divides a raster into tiles that
+describe different part of a globe and puts those tiles into one
+database table.  Rasters can also be imported conveniently into the
+database with another OSGeo library, <a class="reference external" href="http://www.gdal.org/">GDAL</a> (which also provides nice
+Python bindings).</p>
+<p>However, there doesn&#8217;t seem to be a standard way of representing
+temporal rasters in PostGIS.  For instance, with the GDAL import tool
+temporal metadata is completely ignored.  Thus it would require some
+additional work to maintain the temporal metadata in the database.
+Some work would also go into maintaining a master table that
+cross-references to tables of different variables and forecast release
+times.  Also, we would still have to build somewhere the logic of
+choosing the rasters with right time instances and forecast release
+times.</p>
+<p>Admittedly, PostGIS would provide a suite of other functionalities
+that might be convenient in the future.  However, so far the benefits
+haven&#8217;t outweighted the flexibility provided by our custom database
+implementation.</p>
+<blockquote>
+<div><em>Jarno Saarimäki is a senior research engineer in Algorithm
+Development team at Eniram.  Jarno&#8217;s educational background is in
+numerical analysis and geoscience but he is also an avid
+programmer.  Outside of work he enjoys hiking in nature, reading
+historical books, and playing board games.</em></div></blockquote>
+</div>
+</div>
+
+    <div class="postmeta">
+        <div class="author">
+            <span>Posted by Jarno Saarimäki</span>
+        </div>
+        <div class="categories">
+            <span>
+                Filed under:
+                <a href="../../../categories/python.html">Python</a></span>
+        </div>
+        <div class="tags">
+            <span>
+                Tags:
+                <a href="../../../tags/netcdf4.html">NetCDF4</a>, <a href="../../../tags/osgeo.html">OSGeo</a></span>
+        </div>
+        </div><ul class="related clearfix">
+            <li class="left"></li>
+            <li class="right"><a href="../../01/12/geodetic_calculations.html">Measuring geodetic distance calculation performance</a> &raquo; </li>
+        </ul></article><aside class="sidebar"><section><div class="widget">
+    <h1>Recent Posts</h1>
+    <ul><li>
+            <a href="#">Implementing a geospatial database with Python</a>
+        </li><li>
+            <a href="../../01/12/geodetic_calculations.html">Measuring geodetic distance calculation performance</a>
+        </li><li>
+            <a href="../../../2014/11/19/reactive_dataflow_programming_in_python_part_2.html">Reactive/dataflow programming in Python, part 2</a>
+        </li><li>
+            <a href="../../../2014/10/24/reactive_dataflow_programming_in_python_part_1.html">Reactive/dataflow programming in Python, part 1</a>
+        </li></ul>
+</div>
+</section><section><div class="widget" id="searchbox" role="search">
+    <h1><a href="#searchbox">Search</a></h1>
+    <form action="../../../search.html" method="get">
+        <input type="text" name="q" />
+        <button type="submit"><span class="fa fa-search"></span></button>
+    </form>
+</div></section></aside></div> <!-- #main --></div> <!-- #main-container -->
+
+        <div class="footer-container" role="contentinfo"><footer class="wrapper">&copy; Copyright 2014, Eniram Ltd. Powered by <a href="http://www.tinkerer.me/">Tinkerer</a> and <a href="http://sphinx.pocoo.org/">Sphinx</a>.</footer></div> <!-- footer-container -->
+
+      </div> <!--! end of #container --><script type="text/javascript">    var disqus_shortname = "eniramdevblog";    disqus_count();</script><!--[if lt IE 7 ]>
+          <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
+          <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
+        <![endif]-->
+    </body>
+</html>
